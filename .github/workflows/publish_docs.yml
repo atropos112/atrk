@@ -1,0 +1,34 @@
+---
+name: Publish Docs
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jontze/action-mdbook@v3
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}
+          # Optional Plugins have to be enabled
+          use-linkcheck: true
+          use-mermaid: true
+          use-toc: true
+          use-opengh: false
+          use-admonish: true
+          use-katex: false
+
+      - run: mdbook build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ github.ref == 'refs/heads/main' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./book/html

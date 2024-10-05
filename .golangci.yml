@@ -1,21 +1,10 @@
+---
 run:
   timeout: 5m
   allow-parallel-runners: true
 
 issues:
-  # don't skip warning about doc comments
-  # don't exclude the default set of lint
   exclude-use-default: false
-  # restore some of the defaults
-  # (fill in the rest as needed)
-  exclude-rules:
-    - path: "api/*"
-      linters:
-        - lll
-    - path: "internal/*"
-      linters:
-        - dupl
-        - lll
 linters:
   disable-all: true
   enable:
@@ -25,12 +14,10 @@ linters:
     - ginkgolinter
     - goconst
     - gocyclo
-    - gofmt
     - goimports
     - gosimple
     - govet
     - ineffassign
-    - lll
     - misspell
     - nakedret
     - prealloc
@@ -40,8 +27,42 @@ linters:
     - unconvert
     - unparam
     - unused
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - dogsled
+    - dupword
+    - durationcheck
+    - godot
+    - godox
+    - gofumpt
+    - misspell
+    - nilerr
+    - nlreturn
+    - noctx
+    - predeclared
+    - reassign
+    - spancheck
+    - sqlclosecheck
+
+
+
 
 linters-settings:
   revive:
+    ignore-generated-header: true
+    severity: warning
+    enable-all-rules: true
     rules:
-      - name: comment-spacings
+      - name: line-length-limit
+        severity: error
+        arguments: [200]
+      - name: package-comments
+        disabled: true
+      - name: dot-imports
+        disabled: true
+      - name: cyclomatic
+        arguments: [10]
+      - name: struct-tag
+        arguments:
+          - "json,inline" # Makes `json:",inline"` valid
