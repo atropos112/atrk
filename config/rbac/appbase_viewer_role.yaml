@@ -1,0 +1,23 @@
+# permissions for end users to view appbases.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: atrk
+    app.kubernetes.io/managed-by: kustomize
+  name: appbase-viewer-role
+rules:
+- apiGroups:
+  - atro.xyz
+  resources:
+  - appbases
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - atro.xyz
+  resources:
+  - appbases/status
+  verbs:
+  - get
