@@ -132,7 +132,7 @@ once i got to api creation i did
 kubebuilder create api --kind App --version v1alpha1 --namespaced
 ```
 
-and answered "y" to both questions, note lack of `--gruop ...` is intentional.
+and answered "y" to both questions, note lack of `--group ...` is intentional.
 
 Similarly for app base I ran
 
