@@ -1,0 +1,16 @@
+[book]
+authors = ["atropos"]
+language = "en"
+multilingual = false
+src = "docs/src"
+title = "Atrk - Homelab Kubernetes Operator"
+
+[preprocessor]
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
+
+[output]
+
+[output.html]
+additional-js = ["docs/mermaid.min.js", "docs/mermaid-init.js"]

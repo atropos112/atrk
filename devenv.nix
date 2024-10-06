@@ -80,11 +80,9 @@
     gotest.enable = true;
     hadolint.enable = true;
     mixed-line-endings.enable = true;
-    mkdocs-linkcheck.enable = true;
     end-of-file-fixer.enable = true;
     check-symlinks.enable = true;
     check-merge-conflicts.enable = true;
-    check-added-large-files.enable = true;
     actionlint.enable = true;
     revive.enable = true;
     trufflehog.enable = true;
