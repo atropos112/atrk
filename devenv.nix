@@ -8,6 +8,8 @@
     kind
     kubectl
     air
+    mdbook
+    mdbook-mermaid
   ];
 
   scripts = {
@@ -41,6 +43,34 @@
         cd -
       '';
       description = "Start the atrk server and watch for changes";
+    };
+    make-webhook-cert = {
+      exec = ''
+        # Define the directory and file paths
+        DIR="/tmp/k8s-webhook-server/serving-certs"
+        CRT_FILE="$DIR/tls.crt"
+        KEY_FILE="$DIR/tls.key"
+
+        # Check if the directory exists, if not, create it
+        if [ ! -d "$DIR" ]; then
+            mkdir -p "$DIR"
+            echo "Created directory: $DIR"
+        fi
+
+        # Check if the tls.crt file exists
+        if [ ! -f "$CRT_FILE" ]; then
+            # Generate a private key
+            openssl genrsa -out "$KEY_FILE" 2048
+            echo "Generated private key: $KEY_FILE"
+
+            # Create a self-signed certificate
+            openssl req -new -x509 -key "$KEY_FILE" -out "$CRT_FILE" -days 365 -subj "/CN=localhost"
+            echo "Generated self-signed certificate: $CRT_FILE"
+        else
+            echo "Certificate already exists: $CRT_FILE"
+        fi
+      '';
+      description = "Generate a self-signed certificate for the webhook server";
     };
   };
   pre-commit.hooks = {
