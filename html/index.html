@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light" dir="ltr">
+<html lang="en" class="ayu" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Chapter 1 - Atrk - Homelab Kubernetes Operator</title>
+        <title>Development - Atrk - Homelab Kubernetes Operator</title>
 
 
         <!-- Custom HTML head -->
@@ -29,6 +29,8 @@
         <link rel="stylesheet" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="docs/custom.css">
+        <link rel="stylesheet" href="./mdbook-admonish.css">
 
     </head>
     <body class="sidebar-visible no-js">
@@ -36,7 +38,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "ayu";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
@@ -61,7 +63,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             var html = document.querySelector('html');
-            html.classList.remove('light')
+            html.classList.remove('ayu')
             html.classList.add(theme);
             var body = document.querySelector('body');
             body.classList.remove('no-js')
@@ -88,7 +90,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html" class="active"><strong aria-hidden="true">1.</strong> Chapter 1</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="development.html" class="active"><strong aria-hidden="true">1.</strong> Development</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -173,14 +175,36 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
-<p>Hello there what is up boy.</p>
-<pre class="mermaid">graph TD;
-    A--&gt;B;
-    A--&gt;C;
-    B--&gt;D;
-    C--&gt;D;
-</pre>
+                        <h1 id="development"><a class="header" href="#development">Development</a></h1>
+<p>The project is developed in Go using Kubebuilder framework and devenv nix shell for development environment.</p>
+<h2 id="table-of-contents"><a class="header" href="#table-of-contents">Table of Contents</a></h2>
+<ul>
+<li><a href="#kubebuilder-setup">Kubebuilder setup</a></li>
+</ul>
+<h2 id="kubebuilder-setup"><a class="header" href="#kubebuilder-setup">Kubebuilder setup</a></h2>
+<p>Initially the project was created using the following command</p>
+<pre><code class="language-bash">kubebuilder init --plugins go/v4 --domain atro.xyz --owner "Atropos" --project-name atrk --repo github.com/atropos112/atrk
+</code></pre>
+<p>Then the APIs were created using the following commands</p>
+<pre><code class="language-bash">kubebuilder create api --kind App --version v1alpha1 --namespaced
+kubebuilder create api --kind AppBase --version v1alpha1 --namespaced=false --plural=appbases
+</code></pre>
+<p>The plan is to have App be a custom resource that is namespaced, while the AppBase should be cluster scoped henced why AppBase has <code>--namespaced=false</code>, I have also added <code>--pluaral</code> to AppBase just to be sure but its not really needed.</p>
+<p>Having gotten the API the next thing is to get validating webhooks, this I did with</p>
+<pre><code class="language-bash">kubebuilder create webhook --kind AppBase --version v1alpha1 --programmatic-validation
+kubebuilder create webhook --kind App --version v1alpha1 --programmatic-validation
+</code></pre>
+<div id="admonition-warning" class="admonition admonish-warning" role="note" aria-labelledby="admonition-warning-title">
+<div class="admonition-title">
+<div id="admonition-warning-title">
+<p>Warning</p>
+</div>
+<a class="admonition-anchor-link" href="#admonition-warning"></a>
+</div>
+<div>
+<p>I am yet to get the webhooks working, I am unable to get make deploy to work as kustomize is complaining, but even in debug am not seeing the validator functions be hit when I expect them to.</p>
+</div>
+</div>
 
                     </main>
 
