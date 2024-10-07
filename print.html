@@ -30,7 +30,8 @@
         <link rel="stylesheet" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="docs/custom.css">
+        <link rel="stylesheet" href="docs/css/custom.css">
+        <link rel="stylesheet" href="docs/css/mdbook-admonish.css">
 
     </head>
     <body class="sidebar-visible no-js">
@@ -180,6 +181,7 @@
 <h2 id="table-of-contents"><a class="header" href="#table-of-contents">Table of Contents</a></h2>
 <ul>
 <li><a href="development.html#kubebuilder-setup">Kubebuilder setup</a></li>
+<li><a href="development.html#webhook-and-the-certificate">Webhook and the certificate</a></li>
 </ul>
 <h2 id="kubebuilder-setup"><a class="header" href="#kubebuilder-setup">Kubebuilder setup</a></h2>
 <p>Initially the project was created using the following command</p>
@@ -194,6 +196,11 @@ kubebuilder create api --kind AppBase --version v1alpha1 --namespaced=false --pl
 <pre><code class="language-bash">kubebuilder create webhook --kind AppBase --version v1alpha1 --programmatic-validation
 kubebuilder create webhook --kind App --version v1alpha1 --programmatic-validation
 </code></pre>
+<h1 id="webhook-and-the-certificate"><a class="header" href="#webhook-and-the-certificate">Webhook and the certificate</a></h1>
+<p>Currently kubebuilder setup creates a ValidatingAdmissionWebhook which is pointing to a service that would exist in the cluster had we deployed the application to the cluster.</p>
+<p>This does however introduce a problem, when you start up the go application (in debug mode or normally), the webhook is never called, this is obviously troublesome in terms of local testing.</p>
+<p>The solution is not ideal but is best I could think of for now, it comes with some gotchas. <code>make-webhook-cert-work</code> devenv command creates a new cert in the expected location <code>/tmp/k8s-webhook-server/serving-certs/tls.crt</code>, it does this using <code>kind/cert.conf</code> which states some configs and most importantly alt_names.</p>
+<p>The command also does a <code>yq</code> snipping on the <code>config/webhook/manifests.yaml</code> to point to the correct url and use <code>caBundle</code>(base64 of the previously generated certificate) it then reapplies it to the cluster so now the webhook validation points to the local machine.</p>
 <div id="admonition-warning" class="admonition admonish-warning" role="note" aria-labelledby="admonition-warning-title">
 <div class="admonition-title">
 <div id="admonition-warning-title">
@@ -202,7 +209,22 @@ kubebuilder create webhook --kind App --version v1alpha1 --programmatic-validati
 <a class="admonition-anchor-link" href="development.html#admonition-warning"></a>
 </div>
 <div>
-<p>I am yet to get the webhooks working, I am unable to get make deploy to work as kustomize is complaining, but even in debug am not seeing the validator functions be hit when I expect them to.</p>
+<p>The downside of this is two-fold:</p>
+<ul>
+<li>Complexity is obviously high</li>
+<li>Currently the cert.conf and devenv snipping of <code>manifests.yaml</code> is hardcoded to point to <code>giant</code> which is name external tailscale hostname that points to my machine, this is obviously suboptimal as it means you have to replace giant with your tailscale hostname or use ngrok.</li>
+</ul>
+</div>
+</div>
+<div id="admonition-todo" class="admonition admonish-info" role="note" aria-labelledby="admonition-todo-title">
+<div class="admonition-title">
+<div id="admonition-todo-title">
+<p>Todo</p>
+</div>
+<a class="admonition-anchor-link" href="development.html#admonition-todo"></a>
+</div>
+<div>
+<p>Find a better way to handle this connection, maybe some local ngrok setup or something else.</p>
 </div>
 </div>
 
@@ -240,8 +262,8 @@ kubebuilder create webhook --kind App --version v1alpha1 --programmatic-validati
         <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
-        <script src="docs/mermaid.min.js"></script>
-        <script src="docs/mermaid-init.js"></script>
+        <script src="docs/js/mermaid.min.js"></script>
+        <script src="docs/js/mermaid-init.js"></script>
 
         <script>
         window.addEventListener('load', function() {
